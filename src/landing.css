@@ -1,0 +1,47 @@
+/* Landing campaign treatment. Review screens retain their own controls. */
+#review-app[data-view="landing"]{background:radial-gradient(ellipse at 78% 35%,#35463c 0,#14221e 40%,#0d1715 80%);color:#e8eadb}
+[data-view="landing"] .review-header{top:26px;left:5%;right:5%}
+[data-view="landing"] .review-brand{letter-spacing:1.8px;font-size:12px;color:#e4e7d9}
+[data-view="landing"] .review-brand strong>span{color:#9bad9f}
+[data-view="landing"] .brand-icon{background:#b66a4220;border-color:#b97851;color:#e5bb8a;border-radius:2px}
+[data-view="landing"] .review-badge{color:#a8b8aa;font-size:8px}
+[data-view="landing"] #art-stage{left:35%;right:-8%;top:5%;bottom:17%;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 16%,#000 92%,transparent)}
+[data-view="landing"] #art-stage canvas{border-radius:0}
+[data-view="landing"] .landing-copy{left:6%;top:18%;width:42%;max-width:530px;z-index:2;animation:landing-enter .8s ease-out both}
+[data-view="landing"] .landing-kicker{font-size:9px;letter-spacing:2.4px;color:#b5bda8;gap:12px}
+[data-view="landing"] .landing-kicker>span{width:27px;background:#e7a168}
+[data-view="landing"] h1{font-size:clamp(76px,9.4vw,145px);letter-spacing:-1.5px;margin:25px 0 26px;line-height:.81;text-shadow:0 5px 40px #0c17156b}
+[data-view="landing"] h1 em{color:#e69a63}
+[data-view="landing"] .landing-tagline{font-size:clamp(15px,1.5vw,21px);font-weight:500;line-height:1.3;margin:0 0 14px;color:#e5e8d8}
+[data-view="landing"] .landing-description{font-size:12px;line-height:1.8;color:#acb9ab;max-width:330px;margin:0}
+[data-view="landing"] .landing-buttons{display:flex;max-width:370px;gap:10px;margin-top:23px}
+[data-view="landing"] .start-button,[data-view="landing"] .join-button{border-radius:3px;font-size:11px;padding:15px 18px;min-height:46px;gap:22px;transition:background .2s,transform .2s,box-shadow .2s}
+[data-view="landing"] .start-button{background:#e2a16d;color:#182820;box-shadow:0 5px 22px #bd795018;border:1px solid #efb689}
+[data-view="landing"] .start-button:hover{background:#f2ba86;transform:translateY(-2px);box-shadow:0 8px 27px #da986030}
+[data-view="landing"] .join-button{background:#172a2499;color:#d2dccc;border:1px solid #637667}
+[data-view="landing"] .join-button:hover{background:#2e4639;transform:translateY(-2px)}
+[data-view="landing"] .landing-meta{font-size:7px;letter-spacing:1.2px;color:#c0c9b6;margin-top:20px;gap:10px}
+.landing-preview-note{display:block;margin-top:12px;color:#849889;font-size:9px;line-height:1.5}
+.landing-scene-label{position:absolute;right:6%;bottom:31%;z-index:2;display:grid;gap:8px;pointer-events:none;color:#dce3cb;animation:landing-enter 1s .2s both}
+.scene-coordinate{font-size:8px;letter-spacing:2px;color:#b2bea6}.landing-scene-label strong{font-family:'Barlow Condensed',sans-serif;font-size:29px;letter-spacing:1px;font-weight:600}
+.scene-status{font-size:8px;letter-spacing:1.8px;color:#dfa978;display:flex;gap:8px;align-items:center}.scene-status i{width:5px;height:5px;background:#e9a264;border-radius:50%;box-shadow:0 0 12px #db9b70;animation:beacon-breathe 3s ease-in-out infinite}
+.scene-label-rule{width:44px;height:1px;background:#bb845a;margin-top:4px}.landing-scene-label small{font-size:7px;letter-spacing:1px;color:#9cafa1}
+.landing-features{position:absolute;left:6%;right:6%;bottom:14%;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;border-top:1px solid #778d6c44;padding-top:16px;z-index:2;animation:landing-enter 1s .3s both}
+.landing-features>div{position:relative;padding-left:33px}.feature-number{position:absolute;left:0;top:1px;color:#bd8a63;font-size:9px;letter-spacing:1px}.landing-features strong{font-size:9px;letter-spacing:1.3px;color:#d0d9c7;font-weight:600}.landing-features p{font-size:10px;color:#839b8b;line-height:1.6;margin:8px 0 0}
+.motion-toggle{position:absolute;right:6%;bottom:9%;border:0;background:none;color:#9aad9b;font-size:8px;letter-spacing:.7px;display:flex;gap:8px;align-items:center;padding:8px;z-index:5}
+[data-view="landing"] .review-tabs{background:#15271edb;border-color:#576b514d;box-shadow:none;border-radius:4px;bottom:35px}
+[data-view="landing"] .review-tabs button{color:#a5b79e;font-size:9px;padding:9px 13px;border-radius:2px}
+[data-view="landing"] .review-tabs button.active{background:#b98458;color:#0d2018}
+[data-view="landing"] .review-tabs button.active span{color:#284531}
+[data-view="landing"] .review-tabs button:hover:not(.active){background:#324735}
+[data-view="landing"] .review-note{font-size:7px;color:#718c78;bottom:12px}
+[data-view="landing"] .stage-caption{display:none}
+#review-app:not([data-view="landing"]) .landing-features,#review-app:not([data-view="landing"]) .landing-scene-label,#review-app:not([data-view="landing"]) .motion-toggle{display:none}
+@keyframes landing-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes beacon-breathe{50%{opacity:.45;box-shadow:0 0 3px #db9b70}}
+[data-motion-paused="true"] .scene-status i{animation:none}
+@media(max-width:1000px) and (min-width:701px){[data-view="landing"] .landing-copy{top:19%;width:48%}[data-view="landing"] h1{font-size:95px}[data-view="landing"] .landing-tagline{font-size:16px}.landing-scene-label{right:4%;bottom:32%}.landing-features{gap:15px}.landing-features strong{font-size:8px;letter-spacing:.6px}}
+@media(max-width:700px){[data-view="landing"] .review-header{top:18px;left:6%;right:6%}[data-view="landing"] .review-brand{font-size:10px}[data-view="landing"] .review-badge{font-size:6px;letter-spacing:1px}[data-view="landing"] #art-stage{left:4%;right:-12%;top:4%;bottom:41%;mask-image:linear-gradient(0deg,transparent,#000 25%,#000 80%,transparent)}[data-view="landing"] .landing-copy{display:block;top:auto;bottom:21%;left:7%;width:86%;max-width:none}[data-view="landing"] .landing-kicker{font-size:7px;letter-spacing:1.5px;margin-bottom:0}[data-view="landing"] h1{font-size:76px;line-height:.8;margin:16px 0 14px}[data-view="landing"] .landing-tagline{font-size:14px;margin-bottom:8px}[data-view="landing"] .landing-description{font-size:10px;line-height:1.6;max-width:300px}[data-view="landing"] .landing-buttons{margin-top:15px;max-width:330px}[data-view="landing"] .start-button,[data-view="landing"] .join-button{font-size:10px;padding:12px 14px;min-height:39px;gap:13px}[data-view="landing"] .landing-meta{font-size:6px;letter-spacing:.6px;gap:6px;margin-top:13px}.landing-preview-note{font-size:7px;margin-top:8px}.landing-scene-label{right:7%;top:13%;bottom:auto;gap:6px}.landing-scene-label strong{font-size:22px}.scene-coordinate{font-size:6px}.scene-status{font-size:6px}.landing-scene-label small,.scene-label-rule{display:none}.landing-features{left:7%;right:7%;bottom:11%;gap:10px;padding-top:10px}.landing-features>div{padding-left:0}.feature-number{display:none}.landing-features strong{font-size:7px;letter-spacing:.5px;line-height:1.5;display:block}.landing-features p{font-size:7px;line-height:1.5;margin-top:4px}.motion-toggle{right:5%;bottom:7%;font-size:7px}[data-view="landing"] .review-tabs{bottom:24px;width:88%;padding:3px}[data-view="landing"] .review-tabs button{font-size:7px;padding:8px 7px;gap:4px}[data-view="landing"] .review-note{bottom:7px;font-size:6px}}
+@media(max-height:680px) and (min-width:701px){[data-view="landing"] .landing-copy{top:16%}[data-view="landing"] h1{font-size:91px;margin:19px 0 18px}[data-view="landing"] .landing-tagline{font-size:16px}[data-view="landing"] .landing-description{font-size:11px}[data-view="landing"] .landing-buttons{margin-top:16px}[data-view="landing"] .landing-meta{margin-top:13px}.landing-preview-note{margin-top:8px}.landing-features{bottom:15%;padding-top:12px}.landing-features p{margin-top:5px}}
+@media(prefers-reduced-motion:reduce){.landing-copy,.landing-scene-label,.landing-features,.scene-status i{animation:none!important}[data-view="landing"] .start-button,[data-view="landing"] .join-button{transition:none}}
+[data-view="landing"] .landing-copy{top:16%}[data-view="landing"] h1{font-size:clamp(76px,8.5vw,132px);margin:20px 0 22px}[data-view="landing"] #art-stage:after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#14221e,transparent 27%);pointer-events:none}@media(max-width:700px){[data-view="landing"] .landing-copy{top:auto}[data-view="landing"] h1{font-size:76px;margin:16px 0 14px}}
