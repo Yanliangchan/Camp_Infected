@@ -1,3 +1,5 @@
+import {CAMP_PALETTE as P} from './render/campPalette';
+import {addRoomSurfaces} from './render/roomSurfaces';
 import * as THREE from 'three';
 import type {AmbientFixture} from './render/atmosphere';
 import {addPassOfficeProps} from './passOfficeProps';
@@ -17,7 +19,7 @@ function surface(kind:'plaster'|'tile'|'concrete',base:string){
 export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
  const fixtures:AmbientFixture[]=[];
  const room=new THREE.Group();room.name='pass-office-dungeon-review';scene.add(room);
- const plaster=surface('plaster','#c0c0af'),paint=surface('plaster','#677367'),concrete=surface('concrete','#616c66'),tiles=surface('tile','#9caaa1');
+ const plaster=surface('plaster',P.plaster),paint=surface('plaster',P.lowerWall),concrete=surface('concrete',P.concrete),tiles=surface('tile','#9caaa1');
  const steel=new THREE.MeshStandardMaterial({color:0x4f5d55,metalness:.35,roughness:.68});
  const dark=new THREE.MeshStandardMaterial({color:0x303a34,roughness:.9});
  const trim=new THREE.MeshStandardMaterial({color:0x8c9386,roughness:.75});
@@ -140,6 +142,7 @@ export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
   const geometry=new THREE.BufferGeometry().setFromPoints(path.map(([x,z])=>new THREE.Vector3(x,.075,z)));
   const line=new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0xd7c08c,dashSize:.25,gapSize:.15,transparent:true,opacity:.8,depthWrite:false}));line.computeLineDistances();routes.add(line);
  }
+ addRoomSurfaces(room);
  room.userData.ambientFixtures=fixtures;
  return room;
 }

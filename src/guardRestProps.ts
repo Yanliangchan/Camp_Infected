@@ -1,3 +1,4 @@
+import {CAMP_PALETTE as P} from './render/campPalette';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -113,10 +114,10 @@ export function addGuardRestProps(group:THREE.Group):void{
  if(group.getObjectByName('guard-rest-props'))return;
  const g=new THREE.Group();g.name='guard-rest-props';group.add(g);const k=new RestKit();
  // Off-duty lounge grouped around a low, practical table.
- couch(k,17.1,-4.35,0,0x727c67);couch(k,13.7,4.2,Math.PI/2,0x515c54);
- k.box(1.35,.08,.72,17.1,.43,-1.2,wood,.035);for(const x of [16.58,17.62])for(const z of [-1.43,-.97])k.box(.055,.37,.055,x,.23,z,steel);
- k.box(.43,.022,.31,16.85,.49,-1.21,0xd0d2bf,.005);for(let i=0;i<4;i++)k.box(.29,.004,.007,16.85,.505,-1.28+i*.035,0x8b9780,.001);
- k.cyl(.07,.1,17.47,.52,-1.11,0xe2e0cf);k.cyl(.045,.006,17.47,.573,-1.11,0x8c8065);
+ couch(k,17.1,-4.35,0,P.loungeFabric);couch(k,15.15,-2.3,Math.PI/2,P.loungeFabricDark);
+ k.box(1.35,.08,.72,17.1,.43,-2.9,wood,.035);for(const x of [16.58,17.62])for(const z of [-3.13,-2.67])k.box(.055,.37,.055,x,.23,z,steel);
+ k.box(.43,.022,.31,16.85,.49,-2.91,0xd0d2bf,.005);for(let i=0;i<4;i++)k.box(.29,.004,.007,16.85,.505,-2.98+i*.035,0x8b9780,.001);
+ k.cyl(.07,.1,17.47,.52,-2.81,0xe2e0cf);k.cyl(.045,.006,17.47,.573,-2.81,0x8c8065);
  k.box(1.12,.7,.41,19.2,.4,-4.645,0x87947e,.025);for(const x of [18.84,19.2,19.56]){k.box(.31,.52,.035,x,.4,-4.415,0xacb6a0,.015);k.box(.14,.02,.03,x,.57,-4.389,steel,.004);}
  k.box(1.9,1.06,.095,19.2,1.92,-4.8025,0x38463e,.035);
  screen(g,1.77,.95,19.2,1.93,-4.748,c=>{
@@ -125,11 +126,11 @@ export function addGuardRestProps(group:THREE.Group):void{
   c.fillStyle='#3b5645';c.fillRect(0,205,512,51);c.fillStyle='#dae3cf';c.font='bold 21px sans-serif';c.fillText('CAMP CHANNEL  •  REST PERIOD',22,236);
  });
  // Compact dining area; its right edge stays clear of the x21..24 passage.
- k.box(2.7,.085,1.15,17.7,.79,5.75,0xc4c5b3,.04);
- for(const x of [16.57,18.83])for(const z of [5.32,6.18])k.box(.045,.72,.045,x,.4,z,steel,.01);
- for(const x of [16.9,18.5]){chair(k,x,4.8,0);chair(k,x,6.7,Math.PI);}
- for(const x of [17.05,18.4])k.cyl(.13,.024,x,.85,5.75,0xe0dfcf);
- k.box(.21,.19,.21,17.7,.9,5.75,0x809175,.02);for(let i=0;i<3;i++)k.box(.17,.012,.14,17.7,.995+i*.012,5.75,0xe9e5d5,.003);
+ k.box(2.7,.085,1.15,17.7,.79,8.3,0xc4c5b3,.04);
+ for(const x of [16.57,18.83])for(const z of [7.87,8.73])k.box(.045,.72,.045,x,.4,z,steel,.01);
+ for(const x of [16.9,18.5]){chair(k,x,7.35,0);chair(k,x,9.25,Math.PI);}
+ for(const x of [17.05,18.4])k.cyl(.13,.024,x,.85,8.3,0xe0dfcf);
+ k.box(.21,.19,.21,17.7,.9,8.3,0x809175,.02);for(let i=0;i<3;i++)k.box(.17,.012,.14,17.7,.995+i*.012,8.3,0xe9e5d5,.003);
  // Kitchenette is along the rear edge of the dining zone.
  k.box(4.8,.73,.58,17.5,.4,10.58,0xa9b39d,.035);k.box(4.95,.09,.6,17.5,.81,10.58,0xd6d8c8,.035);
  for(const x of [15.75,17.5,19.25]){k.box(1.56,.62,.03,x,.4,10.24,0xbec6b1,.018);k.box(.21,.025,.045,x,.56,10.216,steel,.004);}

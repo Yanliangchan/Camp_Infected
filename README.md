@@ -30,6 +30,8 @@ Build and automated tests are development checks. Production readiness, campaign
 
 ### Model and map test preview
 
-The model/map inspector is `review.html`. A static test build from source commit `79f6cd0` is available on the separate `gh-pages` branch; it includes character animation controls, map close-ups, routes, inspection lighting and the ambient-animation toggle. The Railway site is unchanged.
+The model/map inspector is `review.html`. A static test build (source revision recorded in `preview-build.txt`) is available on the separate `gh-pages` branch; it includes character animation controls, map close-ups, routes, inspection lighting and the ambient-animation toggle. The Railway site is unchanged.
 
-To enable this preview, open the repository's **Settings → Pages**, choose **Deploy from a branch**, select **gh-pages / (root)**, and save. The GitHub integration used here cannot enable Pages itself (GitHub returned HTTP 403). Once Pages finishes publishing, the inspector URL is `https://yanliangchan.github.io/Camp_Infected/review.html`. This is a fixed test snapshot, not an automatic deployment of every source change.
+For initial setup, open the repository's **Settings → Pages**, choose **Deploy from a branch**, select **gh-pages / (root)**, and save. The GitHub integration used here cannot enable Pages itself (GitHub returned HTTP 403). Once Pages finishes publishing, the inspector URL is `https://yanliangchan.github.io/Camp_Infected/review.html`. This is a fixed test snapshot, not an automatic deployment of every source change.
+
+The current map direction and SOCiety comparison are documented in [Art direction](docs/ART_DIRECTION.md). The floor palette, practical effects and furniture grouping are shared by the inspector and solo tutorial.

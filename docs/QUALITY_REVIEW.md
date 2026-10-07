@@ -72,3 +72,7 @@ Next priorities, in order:
 5. Validate a complete encounter with human players and profile on target hardware before increasing scene density. Browser software rendering cannot establish a shipping performance budget.
 
 This atmosphere pass does not establish paid-release readiness. Animation adds life, but material work, composition, combat feel and a complete polished mission are still necessary.
+
+### SOCiety comparison and room composition pass
+
+See [Art direction](ART_DIRECTION.md) for the direct local comparison and applied rules. The map now separates functional floor finishes, uses a shared palette and merged furniture grounding, and places the lounge/dining furniture in believable clusters with matching collisions. Brighter neutral lighting replaces the pervasive green-grey cast in the inspector and gameplay. Before/after and close-up screenshots were captured from real rendered builds, without generated concept art. The current inspector reports 211 draw calls and about 614k triangles including display actors and shadow passes; this is a diagnostic count, not a performance qualification. The map still has a large sparse footprint and needs encounter-led layout refinement.

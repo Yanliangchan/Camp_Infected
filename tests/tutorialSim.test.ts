@@ -161,7 +161,10 @@ it("keeps the approved doorways and interaction positions traversable", () => {
     expect(s.blocked(x, z), `door ${x},${z}`).toBe(false);
   expect(s.blocked(-3, -1.1)).toBe(true);
   expect(s.blocked(2, 8.5)).toBe(true);
-  expect(s.blocked(17.7, 5.75)).toBe(true);
+  expect(s.blocked(17.7, 8.3)).toBe(true);
+  expect(s.blocked(17.7, 5.75)).toBe(false);
+  expect(s.blocked(15.15, -2.3)).toBe(true);
+  expect(s.blocked(13.7, 4.2)).toBe(false);
   expect(s.blocked(26.4, 2.15)).toBe(true);
 });
 it("distinguishes a clear shot from a route wide enough for the player", () => {

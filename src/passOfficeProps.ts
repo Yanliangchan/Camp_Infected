@@ -1,3 +1,4 @@
+import {CAMP_PALETTE as P} from './render/campPalette';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -5,7 +6,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 const sourceGeometry=new Map<string,THREE.BufferGeometry>();
 const propGeometry=new Map<string,THREE.BufferGeometry>();
 const furnitureMaterial=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.78});
-const steel=0x63716a,lightSteel=0x9ca49b,laminate=0xdadbd0,trim=0x6f7d6c,paper=0xe9e6d8,navy=0x536b78;
+const steel=0x63716a,lightSteel=0x9ca49b,laminate=0xdadbd0,trim=0x6f7d6c,paper=0xe9e6d8,navy=P.upholstery;
 const shape=(key:string,create:()=>THREE.BufferGeometry)=>{let g=sourceGeometry.get(key);if(!g){g=create();sourceGeometry.set(key,g);}return g;};
 class PropBuilder{
  private parts:THREE.BufferGeometry[]=[];

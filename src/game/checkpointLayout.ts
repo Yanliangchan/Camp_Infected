@@ -54,15 +54,15 @@ export const solids: Rect[] = [
   solid("equipment-west", 12.46, 4.1, 0.8, 2.1, 1.05),
   solid("equipment-east", 12.46, 8.7, 0.8, 2.1, 1.05),
   solid("lounge-back-sofa", 17.1, -4.35, 2.15, 0.86, 0.9),
-  solid("lounge-side-sofa", 13.7, 4.2, 0.86, 2.15, 0.9),
-  solid("coffee-table", 17.1, -1.2, 1.35, 0.72, 0.48),
+  solid("lounge-side-sofa", 15.15, -2.3, 0.86, 2.15, 0.9),
+  solid("coffee-table", 17.1, -2.9, 1.35, 0.72, 0.48),
   solid("tv-cabinet", 19.2, -4.645, 1.12, 0.41, 0.75),
-  solid("dining-table", 17.7, 5.75, 2.7, 1.15, 0.82, "barrier"),
+  solid("dining-table", 17.7, 8.3, 2.7, 1.15, 0.82, "barrier"),
   solid("kitchenette", 17.5, 10.58, 4.95, 0.6, 1.2),
   solid("supply-pallet",10.2,3.05,1.95,1.55,1.62,"barrier"),
   solid("supply-case", 5, 5.1, 1.1, 0.7, 0.5),
   ...[16.9, 18.5].flatMap((x) =>
-    [4.8, 6.7].map((z) =>
+    [7.35, 9.25].map((z) =>
       solid("dining-chair-" + x + "-" + z, x, z, 0.5, 0.5, 0.85),
     ),
   ),

@@ -1,3 +1,4 @@
+import {CAMP_PALETTE as P} from "./render/campPalette";
 import * as THREE from "three";
 import {
   createCharacter,
@@ -36,9 +37,9 @@ renderer.toneMapping = THREE.NeutralToneMapping;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#a9c6ba");
 const camera = new THREE.OrthographicCamera();
-scene.background = new THREE.Color("#182923");
-scene.add(new THREE.HemisphereLight(0xdce5d5, 0x526555, 0.8));
-const sun = new THREE.DirectionalLight(0xffe7bc, 1.6);
+scene.background = new THREE.Color(P.background);
+scene.add(new THREE.HemisphereLight(0xfff1df, 0x677482, 1.05));
+const sun = new THREE.DirectionalLight(0xffe7cf, 1.7);
 sun.position.set(-12, 28, 18);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -51,7 +52,7 @@ Object.assign(sun.shadow.camera, {
 });
 sun.shadow.normalBias = 0.02;
 scene.add(sun);
-const fill = new THREE.DirectionalLight(0xc4d8ef, 0.5);
+const fill = new THREE.DirectionalLight(0xc4d8ef, 0.65);
 fill.position.set(18, 16, 28);
 scene.add(fill);
 const environment = buildDungeonRoom(scene);
