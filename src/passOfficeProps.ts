@@ -1,3 +1,4 @@
+import {CAMP_PALETTE as P} from './render/campPalette';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -5,7 +6,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 const sourceGeometry=new Map<string,THREE.BufferGeometry>();
 const propGeometry=new Map<string,THREE.BufferGeometry>();
 const furnitureMaterial=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,roughness:.78});
-const steel=0x63716a,lightSteel=0x9ca49b,laminate=0xdadbd0,trim=0x6f7d6c,paper=0xe9e6d8,navy=0x536b78;
+const steel=0x63716a,lightSteel=0x9ca49b,laminate=0xdadbd0,trim=0x6f7d6c,paper=0xe9e6d8,navy=P.upholstery;
 const shape=(key:string,create:()=>THREE.BufferGeometry)=>{let g=sourceGeometry.get(key);if(!g){g=create();sourceGeometry.set(key,g);}return g;};
 class PropBuilder{
  private parts:THREE.BufferGeometry[]=[];
@@ -119,7 +120,9 @@ export function addPassOfficeProps(group:THREE.Group):void{
  k.cyl(.31,.06,-6.14,.115,.25,0x7c8b7a);k.cyl(.03,1.23,-6.14,.75,.25,steel);k.box(.18,.12,.18,-6.14,1.36,.25,0x8b9b86,.03);
  for(const r of [.14,.27,.39])k.add(new THREE.TorusGeometry(r,.013,6,32),0x6a7e69,-6.14,1.76,.24);
  for(let i=0;i<10;i++){const a=i*Math.PI/5;k.box(.015,.78,.016,-6.14,1.76,.24,0x778d76,.004,new THREE.Euler(0,0,a));}
- for(let i=0;i<3;i++){const a=i*Math.PI*2/3;k.box(.14,.27,.03,-6.14+Math.sin(a)*.14,1.76+Math.cos(a)*.14,.255,0xb7c2a7,.055,new THREE.Euler(0,0,-a));}
+ const rotor=new THREE.Group();rotor.name='pedestal-fan-rotor';rotor.position.set(-6.14,1.76,.255);props.add(rotor);
+ const bladeMaterial=new THREE.MeshStandardMaterial({color:0xb7c2a7,roughness:.8});
+ for(let i=0;i<3;i++){const a=i*Math.PI*2/3;const blade=new THREE.Mesh(new THREE.BoxGeometry(.14,.27,.03),bladeMaterial);blade.position.set(Math.sin(a)*.14,Math.cos(a)*.14,0);blade.rotation.z=-a;rotor.add(blade);}
  k.cyl(.069,.065,-6.14,1.76,.3,0x8c9c83,new THREE.Euler(Math.PI/2,0,0));
  // Noticeboard and visitor instructions are original fictional paperwork.
  k.box(.13,1.32,2.2,-6.8,1.97,.35,0xa89b78,.035);

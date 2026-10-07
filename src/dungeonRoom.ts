@@ -1,4 +1,7 @@
+import {CAMP_PALETTE as P} from './render/campPalette';
+import {addRoomSurfaces} from './render/roomSurfaces';
 import * as THREE from 'three';
+import type {AmbientFixture} from './render/atmosphere';
 import {addPassOfficeProps} from './passOfficeProps';
 import {addGuardRestProps} from './guardRestProps';
 import {addSecurityScreeningProps} from './securityScreeningProps';
@@ -14,8 +17,9 @@ function surface(kind:'plaster'|'tile'|'concrete',base:string){
  });map.wrapS=map.wrapT=THREE.RepeatWrapping;return new THREE.MeshStandardMaterial({map,roughness:kind==='tile'?.77:.96});
 }
 export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
+ const fixtures:AmbientFixture[]=[];
  const room=new THREE.Group();room.name='pass-office-dungeon-review';scene.add(room);
- const plaster=surface('plaster','#c0c0af'),paint=surface('plaster','#677367'),concrete=surface('concrete','#616c66'),tiles=surface('tile','#9caaa1');
+ const plaster=surface('plaster',P.plaster),paint=surface('plaster',P.lowerWall),concrete=surface('concrete',P.concrete),tiles=surface('tile','#9caaa1');
  const steel=new THREE.MeshStandardMaterial({color:0x4f5d55,metalness:.35,roughness:.68});
  const dark=new THREE.MeshStandardMaterial({color:0x303a34,roughness:.9});
  const trim=new THREE.MeshStandardMaterial({color:0x8c9386,roughness:.75});
@@ -92,7 +96,7 @@ export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
  box(.055,.24,.075,5.38,1.18,-4.68,trim);for(const y of [.44,1.45,2.36])box(.05,.11,.12,3.9,y,-4.74,dark);
  sign('CONTROLLED AREA','AUTHORISED PERSONNEL',1.35,.33,4.75,1.04,-4.73);
  const red=new THREE.MeshStandardMaterial({color:0x9e4832,emissive:0xe55a35,emissiveIntensity:.8,roughness:.4});cylinder(.065,.15,5.92,2.3,-4.67,red);
- const alert=new THREE.PointLight(0xff633d,1.2,3.7,2);alert.position.set(5.92,2.35,-4.3);room.add(alert);
+ const alert=new THREE.PointLight(0xff633d,1.2,3.7,2);alert.position.set(5.92,2.35,-4.3);room.add(alert);fixtures.push({light:alert,material:red,baseIntensity:1.2,baseEmission:.8,kind:'beacon',phase:0});
  sign('EXIT →','',.64,.24,4.75,2.96,-4.8,'#2c664e');
  // Black/yellow threshold stripes, scuffs, drip stains and quiet outbreak traces.
  const hazard=canvasTexture(c=>{c.fillStyle='#a39358';c.fillRect(0,0,512,512);c.fillStyle='#303a32';for(let i=-512;i<1024;i+=100){c.beginPath();c.moveTo(i,0);c.lineTo(i+45,0);c.lineTo(i+557,512);c.lineTo(i+512,512);c.fill();}});
@@ -105,7 +109,7 @@ export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
  // Practical fluorescent fittings supply a cool institutional light, contrasted
  // with a single amber security lamp at the blocked onward door.
  const tube=new THREE.MeshStandardMaterial({color:0xd5e2d7,emissive:0xd5e2d7,emissiveIntensity:1.2});
- for(const x of [-4.2,.2,9.5]){box(1.7,.12,.22,x,2.91,-4.76,steel);box(1.5,.04,.14,x,2.84,-4.66,tube);const light=new THREE.PointLight(0xd4e4d9,11,8,2);light.position.set(x,2.68,-2.7);room.add(light);}
+ for(const x of [-4.2,.2,9.5]){box(1.7,.12,.22,x,2.91,-4.76,steel);const bulb=tube.clone();box(1.5,.04,.14,x,2.84,-4.66,bulb);const light=new THREE.PointLight(0xd4e4d9,11,8,2);light.position.set(x,2.68,-2.7);room.add(light);if(x!==-4.2)fixtures.push({light,material:bulb,baseIntensity:11,baseEmission:1.2,kind:'fluorescent',phase:x===.2?0:5.7});}
  box(.4,.22,.23,-6.76,2.75,2.6,steel);box(.24,.08,.15,-6.73,2.66,2.6,tube);const light=new THREE.PointLight(0xedd7a6,5,6,2);light.position.set(-6.4,2.55,2.6);room.add(light);
  // The added floor stays open for squad movement. Small perimeter storage
  // clusters preserve the military detail without filling the combat lanes.
@@ -138,5 +142,7 @@ export function buildDungeonRoom(scene:THREE.Scene):THREE.Group {
   const geometry=new THREE.BufferGeometry().setFromPoints(path.map(([x,z])=>new THREE.Vector3(x,.075,z)));
   const line=new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0xd7c08c,dashSize:.25,gapSize:.15,transparent:true,opacity:.8,depthWrite:false}));line.computeLineDistances();routes.add(line);
  }
+ addRoomSurfaces(room);
+ room.userData.ambientFixtures=fixtures;
  return room;
 }
