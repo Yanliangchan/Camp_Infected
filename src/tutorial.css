@@ -1,0 +1,243 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #172a22;
+  color: #f0edda;
+  font-family: "DM Sans", sans-serif;
+}
+button,
+a {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #f2bb77;
+  outline-offset: 4px;
+}
+[hidden] {
+  display: none !important;
+}
+#world {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: linear-gradient(#122b24e6, transparent);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+a {
+  color: #ead9b7;
+  text-underline-offset: 4px;
+}
+header button {
+  background: #183b2dcc;
+  border: 1px solid #adc0a3;
+  color: #f1edd7;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+.objective {
+  position: fixed;
+  top: 90px;
+  left: 30px;
+  max-width: 460px;
+  padding: 18px 22px;
+  background: #16382ce6;
+  border-left: 3px solid #e7b478;
+  pointer-events: none;
+}
+.objective small {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #d7b58b;
+}
+.objective h1 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 30px;
+  margin: 8px 0;
+}
+.objective p {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  color: #c9d6bf;
+}
+.hud {
+  position: fixed;
+  bottom: 65px;
+  left: 30px;
+  display: flex;
+  gap: 30px;
+  background: #173a2ce8;
+  padding: 18px 22px;
+  border-radius: 5px;
+}
+.hud div {
+  display: grid;
+  gap: 8px;
+  min-width: 100px;
+}
+.hud small {
+  font-size: 9px;
+  letter-spacing: 1.3px;
+  color: #c2ceb2;
+}
+.hud b {
+  font-size: 18px;
+}
+progress {
+  width: 130px;
+  height: 6px;
+  accent-color: #d5c685;
+}
+.controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 17px 30px;
+  background: #142d24e8;
+  font-size: 11px;
+  color: #d6dfc7;
+  text-align: center;
+}
+#prompt {
+  position: fixed;
+  bottom: 170px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #213c2ee6;
+  font-weight: 600;
+  color: #f6d7a2;
+  padding: 12px 20px;
+  border-radius: 4px;
+}
+#prompt:empty {
+  display: none;
+}
+dialog {
+  width: min(580px, 92vw);
+  padding: 35px;
+  background: #18382c;
+  color: #e6ebd8;
+  border: 1px solid #849878;
+  border-radius: 7px;
+  box-shadow: 0 20px 100px #0006;
+}
+dialog::backdrop {
+  background: #081c15aa;
+  backdrop-filter: blur(4px);
+}
+dialog h2 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 42px;
+  margin: 0 0 20px;
+}
+dialog p {
+  color: #c3d0b7;
+  font-size: 14px;
+  line-height: 1.8;
+}
+dialog button {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 14px;
+  background: #e8b47d;
+  border: 0;
+  color: #1a3627;
+  border-radius: 3px;
+  font-weight: 600;
+}
+dialog button + button {
+  background: #395740;
+  color: #e7ead8;
+}
+dialog a {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+}
+@media (max-width: 700px) {
+  header {
+    padding: 12px;
+    font-size: 9px;
+  }
+  header > span {
+    display: none;
+  }
+  .objective {
+    left: 12px;
+    top: 65px;
+    right: 12px;
+    max-width: none;
+  }
+  .objective h1 {
+    font-size: 25px;
+  }
+  .hud {
+    left: 12px;
+    right: 12px;
+    gap: 10px;
+    padding: 12px;
+    bottom: 80px;
+    flex-wrap: wrap;
+  }
+  .hud div {
+    min-width: 70px;
+  }
+  .hud b {
+    font-size: 14px;
+  }
+  progress {
+    width: 90px;
+  }
+  .controls {
+    font-size: 9px;
+    padding: 12px;
+    line-height: 1.8;
+  }
+  #prompt {
+    bottom: 200px;
+  }
+  dialog {
+    padding: 24px;
+  }
+}
+#waypoint {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  background: #18392bde;
+  color: #f0d79e;
+  border-bottom: 2px solid #e7bc73;
+  padding: 8px 12px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px #1234;
+}
+#damage-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 160px 50px #cf4c2d;
+  opacity: 0;
+}
