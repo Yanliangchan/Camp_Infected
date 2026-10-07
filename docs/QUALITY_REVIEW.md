@@ -57,3 +57,18 @@ The sparse exterior was not an acceptable visual milestone. Its working mechanic
 Steam references viewed directly: [Dreadhunter](https://store.steampowered.com/app/1553710/Dreadhunter/) and [The Ascent](https://store.steampowered.com/app/979690/The_Ascent/), using official store screenshots from the Steam appdetails API. Dreadhunter shows strong floor/wall surface variation, differentiated cover and combat effects; The Ascent shows layered functional props, lighting hierarchy, wear and clear combat space. Their realism and sci-fi art direction are not the requested visual style. The useful benchmark is coherent environmental detail and gameplay readability, not copying their assets or claiming equivalent production quality.
 
 Still outstanding: full named-boss first-stage design, online co-op, audio and combat animation/feedback, occlusion handling, target-hardware profiling, and independent human playtesting. This remains a solo tutorial slice rather than a complete campaign stage.
+
+### Atmosphere pass and next map priorities
+
+The Steam references (The Ascent and Dreadhunter) show stronger focal lighting, distinct surface treatments, and purposeful environmental stories. Their production quality remains above this prototype. Keep the brighter stylised SAF direction; copying their darkness would hurt readability and contradict the design brief.
+
+Implemented: two independently phased fluorescent dips, a four-second security-lamp pulse, and rotation of the existing pedestal fan blades. Entry, combat fill and rest-wing lighting remain steady. Effects follow simulation time, freeze on pause, and restore steady emission when disabled. The pause menu exposes an ambient animation toggle; reduced-motion preference defaults effects off. No new point lights, shadow lights, particles or per-frame texture uploads were added. The fan adds three inexpensive blade meshes.
+
+Next priorities, in order:
+1. Give the pass office, screening area and rest wing distinct material palettes and one readable focal point each. Add wear where feet, hands and equipment actually contact surfaces, rather than scattering random dirt.
+2. Replace repetitive tile treatment with authored grout, threshold transitions and selective roughness variation. Inspect at the normal gameplay zoom as well as close-up.
+3. Build a coherent lockdown story through displaced chairs, abandoned registration paperwork and a damaged service fixture. Keep retreat lanes clear; ensure any new cover has matching collision.
+4. Add fan hum, electrical buzz, radio ambience and positional alarm audio with volume controls. Pair combat hits with readable feedback and proper reload/attack animation.
+5. Validate a complete encounter with human players and profile on target hardware before increasing scene density. Browser software rendering cannot establish a shipping performance budget.
+
+This atmosphere pass does not establish paid-release readiness. Animation adds life, but material work, composition, combat feel and a complete polished mission are still necessary.

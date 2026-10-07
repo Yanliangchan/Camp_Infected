@@ -10,9 +10,10 @@ import "@fontsource/dm-sans/600.css";
 import "@fontsource/barlow-condensed/700.css";
 import "./tutorial.css";
 import { buildDungeonRoom } from "./dungeonRoom";
-import {addCheckpointDressing} from "./render/checkpointDressing";
+import { addCheckpointDressing } from "./render/checkpointDressing";
+import { updateAtmosphere } from "./render/atmosphere";
 import { introduction } from "./game/checkpointLayout";
-document.body.innerHTML = `<main id="operation"><canvas id="world" aria-label="Main Gate isometric tutorial"></canvas><header><a href="/">CI / RETURN TO CAMP</a><span>SECTOR 01 / MAIN GATE</span><button id="pause">Pause / Esc</button></header><section class="objective"><small>CHECKPOINT LOCKDOWN</small><h1 id="objective"></h1><p id="radio" role="status"></p></section><div id="prompt"></div><div id="waypoint"></div><div id="damage-flash"></div><div class="hud"><div><small>YOU / SAR 21</small><b id="health"></b><progress id="health-bar" max="100"></progress></div><div><small>STAMINA</small><progress id="stamina" max="100"></progress></div><div><small>AMMUNITION</small><b id="ammo"></b></div><div><small>FIELD DRESSING</small><b id="medkit"></b></div></div><aside class="controls">WASD / Move &nbsp; Shift / Sprint &nbsp; Mouse / Aim & fire &nbsp; R / Reload &nbsp; Space / Dodge &nbsp; E / Interact &nbsp; H / Heal &nbsp; M / Sector map &nbsp; Wheel / Zoom</aside><dialog id="menu"><h2 id="menu-title">Main Gate</h2><p id="menu-copy">Find another way into camp. Keep your distance, use cover, and recover supplies.</p><p>WASD to move · Mouse to aim and fire · E to interact<br>R to reload · H to heal · Space to dodge · Esc to pause</p><button id="resume">Begin operation</button><button id="retry">Restart operation</button><a href="/">Return to landing page</a></dialog></main>`;
+document.body.innerHTML = `<main id="operation"><canvas id="world" aria-label="Main Gate isometric tutorial"></canvas><header><a href="/">CI / RETURN TO CAMP</a><span>SECTOR 01 / MAIN GATE</span><button id="pause">Pause / Esc</button></header><section class="objective"><small>CHECKPOINT LOCKDOWN</small><h1 id="objective"></h1><p id="radio" role="status"></p></section><div id="prompt"></div><div id="waypoint"></div><div id="damage-flash"></div><div class="hud"><div><small>YOU / SAR 21</small><b id="health"></b><progress id="health-bar" max="100"></progress></div><div><small>STAMINA</small><progress id="stamina" max="100"></progress></div><div><small>AMMUNITION</small><b id="ammo"></b></div><div><small>FIELD DRESSING</small><b id="medkit"></b></div></div><aside class="controls">WASD / Move &nbsp; Shift / Sprint &nbsp; Mouse / Aim & fire &nbsp; R / Reload &nbsp; Space / Dodge &nbsp; E / Interact &nbsp; H / Heal &nbsp; M / Sector map &nbsp; Wheel / Zoom</aside><dialog id="menu"><h2 id="menu-title">Main Gate</h2><p id="menu-copy">Find another way into camp. Keep your distance, use cover, and recover supplies.</p><p>WASD to move · Mouse to aim and fire · E to interact<br>R to reload · H to heal · Space to dodge · Esc to pause</p><button id="ambient" aria-pressed="true">Ambient animation: on</button><button id="resume">Begin operation</button><button id="retry">Restart operation</button><a href="/">Return to landing page</a></dialog></main>`;
 const canvas = document.querySelector<HTMLCanvasElement>("#world")!;
 const menu = document.querySelector<HTMLDialogElement>("#menu")!;
 let overview = false,
@@ -54,6 +55,23 @@ const fill = new THREE.DirectionalLight(0xc4d8ef, 0.5);
 fill.position.set(18, 16, 28);
 scene.add(fill);
 const environment = buildDungeonRoom(scene);
+const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
+let ambientEnabled = !motionPreference.matches;
+const ambientButton = document.querySelector<HTMLButtonElement>("#ambient")!;
+function syncAmbient() {
+  ambientButton.textContent = `Ambient animation: ${ambientEnabled ? "on" : "off"}`;
+  ambientButton.setAttribute("aria-pressed", String(ambientEnabled));
+  updateAtmosphere(environment, sim.time, ambientEnabled);
+}
+ambientButton.addEventListener("click", () => {
+  ambientEnabled = !ambientEnabled;
+  syncAmbient();
+});
+motionPreference.addEventListener("change", () => {
+  ambientEnabled = !motionPreference.matches;
+  syncAmbient();
+});
+syncAmbient();
 addCheckpointDressing(scene);
 // The gameplay slice now uses the approved detailed artwork, not a second blockout.
 function casePart(
@@ -94,7 +112,7 @@ const player = createCharacter("player", "soldier");
 setCharacterWeapon(player, "SAR 21");
 scene.add(player);
 const survivor = createCharacter("player", "soldier");
-survivor.position.set(points.survivor.x,.12,points.survivor.z);
+survivor.position.set(points.survivor.x, 0.12, points.survivor.z);
 survivor.rotation.z = -Math.PI / 2;
 scene.add(survivor);
 let actors: THREE.Group[] = [];
@@ -267,6 +285,7 @@ function frame(now: number) {
           : "You were overrun. Use cover to break line of sight, reload before moving, and apply your field dressing with H.",
       );
   }
+  updateAtmosphere(environment, sim.time, ambientEnabled);
   player.position.set(sim.x, 0.12, sim.z);
   player.rotation.y = Math.atan2(aimX - sim.x, aimZ - sim.z);
   animateCharacter(
@@ -363,6 +382,11 @@ Object.assign(window, {
   campTutorial: {
     get state() {
       return {
+        ambientEnabled,
+        atmosphereTime: sim.time,
+        fixtureLevels: environment.userData.ambientFixtures.map(
+          (f: { light: THREE.PointLight }) => f.light.intensity,
+        ),
         x: sim.x,
         z: sim.z,
         step: sim.step,
