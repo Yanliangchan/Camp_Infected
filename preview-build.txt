@@ -1,2 +1,3 @@
-Source: 79f6cd0
+Source: 1a802a6
 Model and map inspector: review.html
+SOCiety comparison: coherent palette, floor zones, furniture grounding and grouping.
