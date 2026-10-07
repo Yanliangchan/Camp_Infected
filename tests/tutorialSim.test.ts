@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { TutorialSim, points, solids } from "../src/game/tutorialSim";
+import { start, introduction } from "../src/game/checkpointLayout";
 describe("Main Gate operation", () => {
   it("prevents diagonal movement boosting and passing through cover", () => {
     const s = new TutorialSim(),
       a = new TutorialSim();
     s.tick(0.05, 1, 1);
     a.tick(0.05, 1, 0);
-    expect(Math.hypot(s.x + 9, s.z - 8)).toBeCloseTo(a.x + 9);
+    expect(Math.hypot(s.x - start.x, s.z - start.z)).toBeCloseTo(a.x - start.x);
     const o = solids.find((o) => o.kind === "barrier")!;
     s.x = o.x;
     s.z = o.z + 1;
@@ -17,8 +18,8 @@ describe("Main Gate operation", () => {
     const s = new TutorialSim();
     s.interact();
     expect(s.step).toBe(0);
-    s.x = -5;
-    s.z = 2;
+    s.x = introduction.x;
+    s.z = introduction.z;
     s.tick(0.01);
     expect(s.step).toBe(1);
     s.interact();
@@ -36,19 +37,19 @@ describe("Main Gate operation", () => {
   it("cover stops shots and closest target takes damage", () => {
     const s = new TutorialSim();
     s.ammo = 30;
-    s.x = 1;
-    s.z = 7;
-    s.enemies = [{ x: 1, z: 2, health: 60, cooldown: 0 }];
-    s.shoot(1, 2);
+    s.x = -3;
+    s.z = 1;
+    s.enemies = [{ x: -3, z: -3, health: 60, cooldown: 0 }];
+    s.shoot(-3, -3);
     expect(s.enemies[0].health).toBe(60);
-    s.x = -2;
-    s.z = 7;
+    s.x = 6;
+    s.z = 8;
     s.cooldown = 0;
     s.enemies = [
-      { x: -2, z: 5, health: 60, cooldown: 0 },
-      { x: -2, z: 3, health: 60, cooldown: 0 },
+      { x: 6, z: 6, health: 60, cooldown: 0 },
+      { x: 6, z: 4, health: 60, cooldown: 0 },
     ];
-    s.shoot(-2, 0);
+    s.shoot(6, 0);
     expect(s.enemies.map((e) => e.health)).toEqual([30, 60]);
   });
   it("reload transfers reserve exactly once and cannot invent ammo", () => {
@@ -64,8 +65,8 @@ describe("Main Gate operation", () => {
   });
   it("finishes an operation through ordered objectives", () => {
     const s = new TutorialSim();
-    s.x = -5;
-    s.z = 2;
+    s.x = introduction.x;
+    s.z = introduction.z;
     s.tick(0.01);
     Object.assign(s, points.supply);
     s.interact();
@@ -97,7 +98,7 @@ describe("Main Gate operation", () => {
     s.tick(0.05, 1, 0);
     s.ammo = 10;
     expect(s.shoot(0, 0)).toBe(false);
-    expect(s.x).toBe(-9);
+    expect(s.x).toBe(start.x);
   });
 });
 it("can physically walk and fight through the complete tutorial without teleporting", () => {
@@ -106,7 +107,7 @@ it("can physically walk and fight through the complete tutorial without teleport
   while (s.status === "playing" && ticks++ < 12000) {
     const target =
       s.step === 0
-        ? { x: -3, z: 2 }
+        ? introduction
         : s.step === 1
           ? points.supply
           : s.step === 4
@@ -121,7 +122,7 @@ it("can physically walk and fight through the complete tutorial without teleport
     if (target) {
       const distance = Math.hypot(target.x - s.x, target.z - s.z);
       if (distance > 1.2) {
-        const n = s.lineClear(s.x, s.z, target.x, target.z)
+        const n = s.canWalkLine(s.x, s.z, target.x, target.z)
           ? target
           : s.route(s.x, s.z, target.x, target.z);
         if (n) {
@@ -146,4 +147,25 @@ it("can physically walk and fight through the complete tutorial without teleport
     step: 6,
     kills: 3,
   });
+});
+it("keeps the approved doorways and interaction positions traversable", () => {
+  const s = new TutorialSim();
+  for (const p of Object.values(points))
+    expect(s.blocked(p.x, p.z), JSON.stringify(p)).toBe(false);
+  for (const [x, z] of [
+    [13, 0],
+    [24, 0],
+    [24, 5.5],
+    [-0.7, 8.6],
+  ])
+    expect(s.blocked(x, z), `door ${x},${z}`).toBe(false);
+  expect(s.blocked(-3, -1.1)).toBe(true);
+  expect(s.blocked(2, 8.5)).toBe(true);
+  expect(s.blocked(17.7, 5.75)).toBe(true);
+  expect(s.blocked(26.4, 2.15)).toBe(true);
+});
+it("distinguishes a clear shot from a route wide enough for the player", () => {
+  const s = new TutorialSim();
+  expect(s.lineClear(1, 6, 5, 6)).toBe(true);
+  expect(s.canWalkLine(1, 6, 5, 6)).toBe(false);
 });

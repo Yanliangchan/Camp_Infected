@@ -4,14 +4,19 @@ import {
   animateCharacter,
   setCharacterWeapon,
 } from "./characters";
-import { TutorialSim, solids, points, objectives } from "./game/tutorialSim";
+import { TutorialSim, points, objectives } from "./game/tutorialSim";
 import "@fontsource/dm-sans/400.css";
 import "@fontsource/dm-sans/600.css";
 import "@fontsource/barlow-condensed/700.css";
 import "./tutorial.css";
-document.body.innerHTML = `<main id="operation"><canvas id="world" aria-label="Main Gate isometric tutorial"></canvas><header><a href="/">CI / RETURN TO CAMP</a><span>SECTOR 01 / MAIN GATE</span><button id="pause">Pause / Esc</button></header><section class="objective"><small>CHECKPOINT LOCKDOWN</small><h1 id="objective"></h1><p id="radio" role="status"></p></section><div id="prompt"></div><div id="waypoint"></div><div id="damage-flash"></div><div class="hud"><div><small>YOU / SAR 21</small><b id="health"></b><progress id="health-bar" max="100"></progress></div><div><small>STAMINA</small><progress id="stamina" max="100"></progress></div><div><small>AMMUNITION</small><b id="ammo"></b></div><div><small>FIELD DRESSING</small><b id="medkit"></b></div></div><aside class="controls">WASD / Move &nbsp; Shift / Sprint &nbsp; Mouse / Aim & fire &nbsp; R / Reload &nbsp; Space / Dodge &nbsp; E / Interact &nbsp; H / Heal</aside><dialog id="menu"><h2 id="menu-title">Main Gate</h2><p id="menu-copy">Find another way into camp. Keep your distance, use cover, and recover supplies.</p><p>WASD to move · Mouse to aim and fire · E to interact<br>R to reload · H to heal · Space to dodge · Esc to pause</p><button id="resume">Begin operation</button><button id="retry">Restart operation</button><a href="/">Return to landing page</a></dialog></main>`;
+import { buildDungeonRoom } from "./dungeonRoom";
+import {addCheckpointDressing} from "./render/checkpointDressing";
+import { introduction } from "./game/checkpointLayout";
+document.body.innerHTML = `<main id="operation"><canvas id="world" aria-label="Main Gate isometric tutorial"></canvas><header><a href="/">CI / RETURN TO CAMP</a><span>SECTOR 01 / MAIN GATE</span><button id="pause">Pause / Esc</button></header><section class="objective"><small>CHECKPOINT LOCKDOWN</small><h1 id="objective"></h1><p id="radio" role="status"></p></section><div id="prompt"></div><div id="waypoint"></div><div id="damage-flash"></div><div class="hud"><div><small>YOU / SAR 21</small><b id="health"></b><progress id="health-bar" max="100"></progress></div><div><small>STAMINA</small><progress id="stamina" max="100"></progress></div><div><small>AMMUNITION</small><b id="ammo"></b></div><div><small>FIELD DRESSING</small><b id="medkit"></b></div></div><aside class="controls">WASD / Move &nbsp; Shift / Sprint &nbsp; Mouse / Aim & fire &nbsp; R / Reload &nbsp; Space / Dodge &nbsp; E / Interact &nbsp; H / Heal &nbsp; M / Sector map &nbsp; Wheel / Zoom</aside><dialog id="menu"><h2 id="menu-title">Main Gate</h2><p id="menu-copy">Find another way into camp. Keep your distance, use cover, and recover supplies.</p><p>WASD to move · Mouse to aim and fire · E to interact<br>R to reload · H to heal · Space to dodge · Esc to pause</p><button id="resume">Begin operation</button><button id="retry">Restart operation</button><a href="/">Return to landing page</a></dialog></main>`;
 const canvas = document.querySelector<HTMLCanvasElement>("#world")!;
 const menu = document.querySelector<HTMLDialogElement>("#menu")!;
+let overview = false,
+  zoomSpan = 6;
 let sim = new TutorialSim(),
   paused = true;
 let renderer: THREE.WebGLRenderer;
@@ -30,157 +35,50 @@ renderer.toneMapping = THREE.NeutralToneMapping;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#a9c6ba");
 const camera = new THREE.OrthographicCamera();
-scene.add(new THREE.HemisphereLight(0xfff2d5, 0x698573, 2));
-const sun = new THREE.DirectionalLight(0xffe4bf, 2.6);
-sun.position.set(-14, 30, 12);
+scene.background = new THREE.Color("#182923");
+scene.add(new THREE.HemisphereLight(0xdce5d5, 0x526555, 0.8));
+const sun = new THREE.DirectionalLight(0xffe7bc, 1.6);
+sun.position.set(-12, 28, 18);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
 Object.assign(sun.shadow.camera, {
-  left: -25,
-  right: 25,
+  left: -35,
+  right: 35,
   top: 25,
   bottom: -25,
-  far: 80,
+  far: 90,
 });
-sun.shadow.normalBias = 0.03;
+sun.shadow.normalBias = 0.02;
 scene.add(sun);
-const mats = new Map<string, THREE.MeshStandardMaterial>();
-function mat(c: string) {
-  if (!mats.has(c))
-    mats.set(c, new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 }));
-  return mats.get(c)!;
-}
-function box(
+const fill = new THREE.DirectionalLight(0xc4d8ef, 0.5);
+fill.position.set(18, 16, 28);
+scene.add(fill);
+const environment = buildDungeonRoom(scene);
+addCheckpointDressing(scene);
+// The gameplay slice now uses the approved detailed artwork, not a second blockout.
+function casePart(
   w: number,
   h: number,
   d: number,
   x: number,
   y: number,
   z: number,
-  c: string,
+  color: number,
 ) {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c));
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(w, h, d),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0.12 }),
+  );
   mesh.position.set(x, y, z);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   scene.add(mesh);
   return mesh;
 }
-box(38, 0.3, 30, 0, -0.23, 0, "#728e62");
-const yard = box(30, 0.15, 22, 0, -0.04, 0, "#a5aea1");
-box(6, 0.04, 22, 10, 0.05, 0, "#727e79");
-const officeFloor = box(8, 0.05, 10, -8, 0.06, -5, "#d1d6c6");
-const tileCanvas = document.createElement("canvas");
-tileCanvas.width = tileCanvas.height = 256;
-const tileCtx = tileCanvas.getContext("2d")!;
-tileCtx.fillStyle = "#c3ccbb";
-tileCtx.fillRect(0, 0, 256, 256);
-tileCtx.strokeStyle = "#899b8a";
-tileCtx.lineWidth = 2;
-for (let i = 0; i <= 256; i += 64) {
-  tileCtx.beginPath();
-  tileCtx.moveTo(i, 0);
-  tileCtx.lineTo(i, 256);
-  tileCtx.moveTo(0, i);
-  tileCtx.lineTo(256, i);
-  tileCtx.stroke();
-}
-const tileMap = new THREE.CanvasTexture(tileCanvas);
-tileMap.wrapS = tileMap.wrapT = THREE.RepeatWrapping;
-tileMap.repeat.set(4, 5);
-officeFloor.material = new THREE.MeshStandardMaterial({
-  map: tileMap,
-  roughness: 0.9,
-});
-for (let z = -10; z < 11; z += 2) box(0.12, 0.012, 1, 10, 0.085, z, "#e2dfbc");
-for (let x = -14; x < -4; x += 1) {
-  box(0.65, 0.01, 1.8, x, 0.055, 7, "#d9dccb");
-}
-for (const z of [-9, 9]) {
-  box(29, 0.04, 0.18, 0, 0.055, z, "#d5d8bc");
-}
-
-for (const o of solids) {
-  box(
-    o.w,
-    o.h,
-    o.d,
-    o.x,
-    o.h / 2 + 0.07,
-    o.z,
-    o.kind === "wall"
-      ? "#dfdfca"
-      : o.kind === "barrier"
-        ? "#65756b"
-        : "#7b8966",
-  );
-  if (o.kind === "wall" && o.h > 2) {
-    box(o.w + 0.02, 0.9, o.d + 0.02, o.x, 0.5, o.z, "#7f9483");
-  }
-  if (o.kind === "barrier")
-    for (let x = -o.w / 2 + 0.25; x < o.w / 2; x += 0.55)
-      box(0.3, 0.09, o.d + 0.03, o.x + x, o.h + 0.13, o.z, "#d9b862");
-}
-// Fictional perimeter: public-reference proportions, no real camp layout.
-for (let x = -15; x <= 15; x += 2) {
-  box(0.08, 2, 0.08, x, 1, -11.2, "#5a6c5c");
-  const wire = box(1.95, 1.7, 0.04, x + 0.97, 1, -11.2, "#93a291");
-  wire.material = new THREE.MeshStandardMaterial({
-    color: "#617b69",
-    wireframe: true,
-  });
-}
-box(4, 0.15, 0.18, 10, 1.25, -8, "#ede7d0");
-for (let x = 8; x < 12; x += 0.7) box(0.3, 0.17, 0.2, x, 1.25, -8, "#bd6450");
-box(0.5, 1.4, 0.5, 8, 0.7, -8, "#546c5c");
-for (const x of [-13, 14])
-  for (const z of [-8, 8]) {
-    box(0.25, 2.5, 0.25, x, 1.25, z, "#786447");
-    const crown = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(1.4, 1),
-      mat("#4f8356"),
-    );
-    crown.position.set(x, 3, z);
-    crown.castShadow = true;
-    scene.add(crown);
-  }
-box(2, 0.75, 0.8, -9, 0.45, -7.4, "#748776");
-box(0.6, 0.35, 0.12, -9, 0.96, -7.4, "#364f48");
-box(1.3, 0.45, 0.7, -7, 0.33, -2, "#55765a");
-box(0.7, 0.04, 0.18, -7, 0.58, -2, "#dfd9b8");
-// Small camp details stay beside circulation, with solid furniture registered above.
-for (const z of [-6.8, -5.2]) {
-  box(0.12, 0.5, 0.12, -10.4, 0.35, z, "#45554b");
-  box(0.12, 0.5, 0.12, -9.6, 0.35, z, "#45554b");
-}
-box(0.65, 0.4, 0.12, -10, 1.05, -6.2, "#283e34");
-box(0.3, 0.08, 0.2, -9.6, 0.93, -5.8, "#d4d1b4");
-box(0.08, 1.3, 2.4, -11.8, 0.9, -6, "#809083");
-for (let x = -11; x < -9; x += 0.65) {
-  box(0.55, 0.15, 0.55, x, 0.5, -2, "#7b9988");
-  box(0.55, 0.65, 0.1, x, 0.85, -2.3, "#7b9988");
-}
-for (const [x, z] of [
-  [-2, 7],
-  [5, 7],
-  [12, 2],
-]) {
-  box(0.12, 3.8, 0.12, x, 1.9, z, "#536e5b");
-  box(0.7, 0.13, 0.5, x, 3.8, z, "#dfdebd");
-}
-for (const [x, z] of [
-  [4, 8],
-  [7, 7],
-  [13, -5],
-]) {
-  const cone = new THREE.Mesh(
-    new THREE.ConeGeometry(0.22, 0.6, 12),
-    mat("#ce8051"),
-  );
-  cone.position.set(x, 0.35, z);
-  scene.add(cone);
-  box(0.5, 0.04, 0.5, x, 0.08, z, "#435d49");
-}
+casePart(1.1, 0.42, 0.7, 5, 0.28, 5.1, 0x576b4c);
+casePart(1.15, 0.06, 0.75, 5, 0.52, 5.1, 0x869075);
+for (const x of [4.6, 5.4]) casePart(0.07, 0.09, 0.025, x, 0.4, 5.46, 0xb8b79e);
+casePart(0.38, 0.012, 0.19, 5, 0.557, 5.1, 0xe2dbc5);
 const markers = new Map<string, THREE.Mesh>();
 for (const [key, p] of Object.entries(points)) {
   const ring = new THREE.Mesh(
@@ -192,34 +90,11 @@ for (const [key, p] of Object.entries(points)) {
   scene.add(ring);
   markers.set(key, ring);
 }
-function sign(text: string, x: number, z: number) {
-  const c = document.createElement("canvas");
-  c.width = 512;
-  c.height = 96;
-  const ctx = c.getContext("2d")!;
-  ctx.fillStyle = "#284b39";
-  ctx.fillRect(0, 0, 512, 96);
-  ctx.fillStyle = "#f1edcf";
-  ctx.font = "bold 36px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(text, 256, 62);
-  const m = new THREE.Mesh(
-    new THREE.PlaneGeometry(3, 0.56),
-    new THREE.MeshBasicMaterial({
-      map: new THREE.CanvasTexture(c),
-      side: THREE.DoubleSide,
-    }),
-  );
-  m.position.set(x, 2.1, z);
-  scene.add(m);
-}
-sign("PASS OFFICE", -8, -9.8);
-sign("PEDESTRIAN GATE", 12, -10.8);
 const player = createCharacter("player", "soldier");
 setCharacterWeapon(player, "SAR 21");
 scene.add(player);
 const survivor = createCharacter("player", "soldier");
-survivor.position.set(0, 0.12, 0);
+survivor.position.set(points.survivor.x,.12,points.survivor.z);
 survivor.rotation.z = -Math.PI / 2;
 scene.add(survivor);
 let actors: THREE.Group[] = [];
@@ -235,7 +110,11 @@ function resize() {
   const w = innerWidth,
     h = innerHeight;
   renderer.setSize(w, h);
-  const v = innerWidth < 700 ? 14 : 10;
+  const v = overview
+    ? Math.max(26, (44 * h) / w)
+    : innerWidth < 700
+      ? 9
+      : zoomSpan;
   camera.left = (-v * w) / h / 2;
   camera.right = (v * w) / h / 2;
   camera.top = v / 2;
@@ -244,6 +123,20 @@ function resize() {
   camera.far = 150;
   camera.updateProjectionMatrix();
 }
+canvas.addEventListener(
+  "wheel",
+  (e) => {
+    if (paused) return;
+    e.preventDefault();
+    zoomSpan = THREE.MathUtils.clamp(
+      zoomSpan + Math.sign(e.deltaY) * 0.5,
+      4,
+      10,
+    );
+    resize();
+  },
+  { passive: false },
+);
 addEventListener("resize", resize);
 resize();
 function openMenu(title: string, copy: string) {
@@ -290,6 +183,11 @@ addEventListener("keydown", (e) => {
         "Operation paused",
         "Take a breath. The operation resumes where you left off.",
       );
+    return;
+  }
+  if (e.code === "KeyM" && !menu.open) {
+    overview = !overview;
+    resize();
     return;
   }
   if (paused || e.repeat) return;
@@ -396,7 +294,9 @@ function frame(now: number) {
     );
   });
   survivor.rotation.z = sim.step >= 5 ? 0 : -Math.PI / 2;
-  const target = new THREE.Vector3(sim.x, 0.6, sim.z);
+  const target = overview
+    ? new THREE.Vector3(13, 0.6, 3)
+    : new THREE.Vector3(sim.x + 0.5, 0.6, sim.z - 1.2);
   camera.position.copy(target).add(new THREE.Vector3(24, 26.5, 24));
   camera.lookAt(target);
   camera.updateMatrixWorld();
@@ -410,7 +310,7 @@ function frame(now: number) {
       (key === "exit" && sim.step === 6);
   const point =
     sim.step === 0
-      ? { x: -5, z: 2 }
+      ? introduction
       : sim.step === 1
         ? points.supply
         : sim.step === 4

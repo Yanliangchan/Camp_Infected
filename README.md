@@ -4,9 +4,9 @@ An isometric browser game set in a fictional Singapore military camp, planned fo
 
 ## Character and environment checkpoint
 
-This first checkpoint preserves the reviewed soldier, infected, Security Trooper, equipment, landing page, and expanded pass-office/guard-quarters environment. The default entry is the public landing page with a solo deployment lobby. The character inspector is retained at `/review.html`, and an early solo Main Gate mechanics slice is at `/game.html`. The earlier campaign prototype remains in the source tree but is disconnected from the entry page; its systems are not evidence of a finished playable campaign.
+This first checkpoint preserves the reviewed soldier, infected, Security Trooper, equipment, landing page, and expanded pass-office/guard-quarters environment. The default entry is the public landing page with a solo deployment lobby. The character inspector is retained at `/review.html`, and an early solo guardhouse tutorial is at `/game.html`. The earlier campaign prototype remains in the source tree but is disconnected from the entry page; its systems are not evidence of a finished playable campaign.
 
-The Main Gate mechanics slice is a separate exterior prototype; integration into the approved pass-office/guard-rest environment remains outstanding. See [development plan](docs/DEVELOPMENT_PLAN.md).
+The solo tutorial now uses the approved 40 × 16 metre pass-office/guard-rest environment. Mouse wheel adjusts the gameplay camera; M toggles a sector overview. Campaign expansion and online co-op remain outstanding. See [development plan](docs/DEVELOPMENT_PLAN.md).
 
 ## Run locally
 

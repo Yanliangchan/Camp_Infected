@@ -54,13 +54,13 @@ await page.getByRole("button", { name: "Begin operation" }).click();
 await page.waitForTimeout(300);
 await page.keyboard.down("w");
 await page.waitForFunction(
-  () => window.campTutorial.state.x < -9,
+  () => window.campTutorial.state.x < -.7,
   {},
   { timeout: 15000 },
 );
 await page.keyboard.up("w");
 const state = await page.evaluate(() => window.campTutorial.state);
-assert(state.x < -9 && state.z < 8);
+assert(state.x < -.7 && state.z < 10.3);
 await page.screenshot({ path: "artifacts/tutorial-desktop.png" });
 await page.keyboard.press("Escape");
 const frozen = await page.evaluate(() => window.campTutorial.state);

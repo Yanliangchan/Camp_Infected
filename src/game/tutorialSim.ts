@@ -1,31 +1,11 @@
-export type Rect = {
-  x: number;
-  z: number;
-  w: number;
-  d: number;
-  h: number;
-  kind: "wall" | "barrier" | "crate";
-};
-// Collision and visible geometry use the same authored layout.
-export const solids: Rect[] = [
-  { x: -12, z: -5, w: 0.3, d: 10, h: 2.6, kind: "wall" },
-  { x: -8, z: -10, w: 8, d: 0.3, h: 2.6, kind: "wall" },
-  { x: -4, z: -7, w: 0.3, d: 6, h: 1.1, kind: "wall" },
-  { x: -4, z: 0, w: 0.3, d: 2, h: 1.1, kind: "wall" },
-  { x: -8, z: 0, w: 8, d: 0.3, h: 0.5, kind: "wall" },
-  { x: 1, z: 4, w: 5, d: 1, h: 1.1, kind: "barrier" },
-  { x: 6, z: -2, w: 1, d: 5, h: 1.1, kind: "barrier" },
-  { x: -10, z: -6, w: 1.2, d: 2.5, h: 0.8, kind: "crate" },
-  { x: -10, z: -2, w: 2.5, d: 0.6, h: 0.5, kind: "crate" },
-  { x: 0, z: -5, w: 2, d: 2, h: 1.4, kind: "crate" },
-  { x: 10, z: 5, w: 3, d: 2, h: 1.2, kind: "crate" },
-];
-export const points = {
-  supply: { x: -7, z: -2 },
-  survivor: { x: 0, z: 0 },
-  console: { x: -9, z: -7 },
-  exit: { x: 12, z: -8 },
-};
+import {
+  bounds,
+  start,
+  introduction,
+  solids,
+  points,
+} from "./checkpointLayout";
+export { solids, points } from "./checkpointLayout";
 export const objectives = [
   "Move towards the pass office",
   "Recover ammunition at the supply case",
@@ -45,8 +25,8 @@ export type Enemy = {
   navZ?: number;
 };
 export class TutorialSim {
-  x = -9;
-  z = 8;
+  x = start.x;
+  z = start.z;
   health = 100;
   ammo = 0;
   reserve = 0;
@@ -65,10 +45,10 @@ export class TutorialSim {
   damageTaken = 0;
   blocked(x: number, z: number, r = 0.3) {
     return (
-      x < -15 + r ||
-      x > 15 - r ||
-      z < -11 + r ||
-      z > 11 - r ||
+      x < bounds.left + r ||
+      x > bounds.right - r ||
+      z < bounds.back + r ||
+      z > bounds.front - r ||
       solids.some(
         (o) =>
           x > o.x - o.w / 2 - r &&
@@ -85,9 +65,16 @@ export class TutorialSim {
         return false;
     return true;
   }
+  canWalkLine(ax: number, az: number, bx: number, bz: number) {
+    const n = Math.ceil(Math.hypot(bx - ax, bz - az) / 0.1);
+    for (let i = 1; i <= n; i++)
+      if (this.blocked(ax + ((bx - ax) * i) / n, az + ((bz - az) * i) / n))
+        return false;
+    return true;
+  }
   route(ax: number, az: number, bx: number, bz: number) {
-    const start = [Math.round(ax), Math.round(az)],
-      goal = [Math.round(bx), Math.round(bz)];
+    const start = [Math.round(ax * 2) / 2, Math.round(az * 2) / 2],
+      goal = [Math.round(bx * 2) / 2, Math.round(bz * 2) / 2];
     const id = (x: number, z: number) => x + "," + z;
     const queue = [start],
       seen = new Map<string, number>();
@@ -95,20 +82,20 @@ export class TutorialSim {
     let end = -1;
     for (let i = 0; i < queue.length; i++) {
       const [x, z] = queue[i];
-      if (Math.hypot(x - goal[0], z - goal[1]) < 1) {
+      if (Math.hypot(x - goal[0], z - goal[1]) < 0.4) {
         end = i;
         break;
       }
       for (const [dx, dz] of [
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
+        [0.5, 0],
+        [-0.5, 0],
+        [0, 0.5],
+        [0, -0.5],
       ]) {
         const nx = x + dx,
           nz = z + dz,
           k = id(nx, nz);
-        if (!seen.has(k) && !this.blocked(nx, nz, 0.4)) {
+        if (!seen.has(k) && !this.blocked(nx, nz, 0.3)) {
           seen.set(k, i);
           queue.push([nx, nz]);
         }
@@ -137,7 +124,10 @@ export class TutorialSim {
       0,
       Math.min(100, this.stamina + (fast ? -22 : 14) * dt),
     );
-    if (this.step === 0 && Math.hypot(this.x + 5, this.z - 2) < 3) {
+    if (
+      this.step === 0 &&
+      Math.hypot(this.x - introduction.x, this.z - introduction.z) < 1.3
+    ) {
       this.step = 1;
       this.message =
         "Radio: Supply case inside the pass office. Press E nearby.";
@@ -164,7 +154,7 @@ export class TutorialSim {
           e.cooldown = 1;
         }
       } else if (dist < 24) {
-        const clear = this.lineClear(e.x, e.z, this.x, this.z);
+        const clear = this.canWalkLine(e.x, e.z, this.x, this.z);
         e.navCooldown = Math.max(0, (e.navCooldown ?? 0) - dt);
         if (!clear && e.navCooldown === 0) {
           const waypoint = this.route(e.x, e.z, this.x, this.z);
@@ -258,9 +248,9 @@ export class TutorialSim {
       this.reserve = 90;
       this.step = 2;
       this.enemies = [
-        { x: 2, z: 1, health: 60, cooldown: 0 },
-        { x: 4, z: -6, health: 60, cooldown: 0 },
-        { x: 10, z: -6, health: 60, cooldown: 0 },
+        { x: 7, z: 1, health: 60, cooldown: 0 },
+        { x: 10, z: 5, health: 60, cooldown: 0 },
+        { x: 19, z: 1, health: 60, cooldown: 0 },
       ];
       this.message =
         "Radio: Three contacts. Use the barriers. Do not get surrounded.";
